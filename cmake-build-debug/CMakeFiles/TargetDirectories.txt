@@ -1,0 +1,3 @@
+/Users/gareth/Documents/C++/Projects/SupermarketShelf/cmake-build-debug/CMakeFiles/SupermarketShelf.dir
+/Users/gareth/Documents/C++/Projects/SupermarketShelf/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/gareth/Documents/C++/Projects/SupermarketShelf/cmake-build-debug/CMakeFiles/rebuild_cache.dir
