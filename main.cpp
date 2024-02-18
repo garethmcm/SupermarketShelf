@@ -1,6 +1,11 @@
 #include <iostream>
 #include <string>
+#include <random>
 using namespace std;
+
+class Item;
+
+typedef Item* ItemPtr;
 
 class Item {
 public:
@@ -17,11 +22,20 @@ public:
             return "-";
         }
     }
+
+    void lifts(ItemPtr** shelf, int depth, int width) {
+        for (int i = 0; i < width; i++) {
+            int random = rand() % (depth / 2) + 1;  // Random number between 1 and depth/2
+            for (int j = 0; j < random; j++) {
+                int randomIndex = rand() % depth;  // Random index between 0 and depth-1
+                shelf[randomIndex][i]->isItBlank = true;
+            }
+        }
+    }
 };
 
 Item::Item(int useBy, bool isItBlank) : useBy(useBy), isItBlank(isItBlank) {}
 
-typedef Item* ItemPtr;
 
 int main() {
 
@@ -38,6 +52,8 @@ int main() {
             m[i][j] = new Item(useBy, isItBlank);
         }
     }
+
+    m.lifts(m, depth, width);
 
     for(int i=0; i<depth; i++) {
         for(int j=0; j<width; j++) {
