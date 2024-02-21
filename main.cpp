@@ -1,72 +1,101 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include <random>
 using namespace std;
 
-class Item;
-
-typedef Item* ItemPtr;
-
 class Item {
 public:
-    Item(int useBy, bool isItBlank);
+
+    Item();
+    string print() const;
+//    void dailyLifts(vector<vector<Item>> &shelf, int width, int depth);
+    void setUseBy(int u);
+    int getUseBy() const;
+    void setIsItBlank(bool b);
+    bool getIsItBlank() const;
+
+private:
     int useBy;
     bool isItBlank;
-
-    string rep(int useBy, bool isItBlank) {
-        if(useBy>0 && isItBlank == false) {
-            return to_string(useBy);
-        } else if(useBy == 0 && isItBlank==false) {
-            return "b";
-        } else if (isItBlank == true) {
-            return "-";
-        }
-    }
-
-    void lifts(ItemPtr** shelf, int depth, int width) {
-        for (int i = 0; i < width; i++) {
-            int random = rand() % (depth / 2) + 1;  // Random number between 1 and depth/2
-            for (int j = 0; j < random; j++) {
-                int randomIndex = rand() % depth;  // Random index between 0 and depth-1
-                shelf[randomIndex][i]->isItBlank = true;
-            }
-        }
-    }
 };
 
-Item::Item(int useBy, bool isItBlank) : useBy(useBy), isItBlank(isItBlank) {}
+Item::Item() : useBy(5), isItBlank(false){}
 
+string Item::print() const {
+    if(useBy>0 && isItBlank == false) {
+        return to_string(useBy);
+        } else if(useBy == 0 && isItBlank==false) {
+        return "b";
+        } else if (isItBlank == true) {
+        return "-";
+    }
+}
+
+void Item::setUseBy(int u) {
+    useBy = u;
+}
+
+int Item::getUseBy() const {
+    return useBy;
+}
+
+void Item::setIsItBlank(bool b) {
+    isItBlank = b;
+}
+bool Item::getIsItBlank() const {
+    return isItBlank;
+}
+void dailyLifts(vector<vector<Item>> &shelf, int depth, int width) {
+
+    random_device randomDevice;
+    mt19937 generator(randomDevice());
+    uniform_int_distribution<int> distribution(1, 6);
+    int randomNumber = distribution(generator);
+
+    for (int i=0; i<depth; i++) {
+        if (i<=randomNumber) {
+            shelf[i][0].setIsItBlank(true);
+        }
+    }
+    random_device randomDevice2;
+    mt19937 generator2(randomDevice());
+    uniform_int_distribution<int> distribution2(1, 4);
+    int randomNumber2 = distribution2(generator2);
+
+    for (int i=0; i<depth; i++) {
+        if (i<=randomNumber2) {
+            shelf[i][1].setIsItBlank(true);
+        }
+    }
+    random_device randomDevice3;
+    mt19937 generator3(randomDevice());
+    uniform_int_distribution<int> distribution3(1, 2);
+    int randomNumber3 = distribution3(generator3);
+
+    for (int i=0; i<depth; i++) {
+        if (i<=randomNumber3) {
+            shelf[i][2].setIsItBlank(true);
+        }
+    }
+
+}
 
 int main() {
 
     int width = 3;
     int depth = 10;
-    int useBy = 5;
-    bool isItBlank = false;
 
-    ItemPtr** m = new ItemPtr*[depth];
+    vector<vector<Item>> shelf(depth, vector<Item>(width, Item()));
 
-    for(int i=0; i<depth; i++) {
-        m[i] = new ItemPtr[width];
-        for (int j=0; j<width; j++) {
-            m[i][j] = new Item(useBy, isItBlank);
-        }
-    }
-
-    m.lifts(m, depth, width);
+    dailyLifts(shelf, depth, width);
 
     for(int i=0; i<depth; i++) {
         for(int j=0; j<width; j++) {
-            cout << m[i][j]->rep(useBy, isItBlank) << " ";
+            cout << shelf[i][j].print() << " ";
         }
         cout << endl;
     }
-
-
-    for (int i=0; i<depth; i++) {
-        delete[] m[i];
-    }
-    delete[] m;
 
     return 0;
 }
