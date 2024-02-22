@@ -2,14 +2,16 @@
 #include <string>
 #include <vector>
 #include <random>
+#include <chrono>
+
 using namespace std;
 
 class Item {
 public:
 
     Item();
+    Item(int useBy, bool isItBlank);
     string print() const;
-//    void dailyLifts(vector<vector<Item>> &shelf, int width, int depth);
     void setUseBy(int u);
     int getUseBy() const;
     void setIsItBlank(bool b);
@@ -21,6 +23,7 @@ private:
 };
 
 Item::Item() : useBy(5), isItBlank(false){}
+Item::Item(int useBy, bool isItBlank) : useBy(useBy), isItBlank(isItBlank) {}
 
 string Item::print() const {
     if(useBy>0 && isItBlank == false) {
@@ -46,39 +49,64 @@ void Item::setIsItBlank(bool b) {
 bool Item::getIsItBlank() const {
     return isItBlank;
 }
+
+void printShelf(vector<vector<Item>> &shelf) {
+    for(int i=0; i<shelf.size(); i++) {
+        for(int j=0; j<shelf[i].size(); j++) {
+            cout << shelf[i][j].print() << " ";
+        }
+        cout << endl;
+    }
+}
+
+int randomIzer(int scale) {
+    scale /= 2;
+    default_random_engine dre(chrono::steady_clock::now().time_since_epoch().count());
+    uniform_int_distribution<int> uid(0, scale);
+    return uid(dre);
+}
+
 void dailyLifts(vector<vector<Item>> &shelf, int depth, int width) {
-
-    random_device randomDevice;
-    mt19937 generator(randomDevice());
-    uniform_int_distribution<int> distribution(1, 6);
-    int randomNumber = distribution(generator);
-
-    for (int i=0; i<depth; i++) {
-        if (i<=randomNumber) {
-            shelf[i][0].setIsItBlank(true);
+    for(int i=0; i<width; i++) {
+        int rando = randomIzer(depth-i);
+        for (int j=0; j<depth; j++) {
+            if (j<=rando) {
+                shelf[j][i].setIsItBlank(true);
+            }
         }
     }
-    random_device randomDevice2;
-    mt19937 generator2(randomDevice());
-    uniform_int_distribution<int> distribution2(1, 4);
-    int randomNumber2 = distribution2(generator2);
+    cout << "After lifting items the shelf looks like this: \n";
+    printShelf(shelf);
+}
 
-    for (int i=0; i<depth; i++) {
-        if (i<=randomNumber2) {
-            shelf[i][1].setIsItBlank(true);
+void moveItems(vector<vector<Item>> &shelf) {
+    int start = 0;
+    int end = 0;
+    int scope = 0;
+    for (int i=0; i<shelf.size(); i++) {
+        for (int j=0; j<shelf[i].size(); j++) {
+            if(!shelf[i][j].getIsItBlank()) {
+                start = j;
+            }
+            if(shelf[i][j].getIsItBlank()) {
+                end = j;
+            }
+        }
+        if(start > end) {
+            scope = end - start;
+        } else {
+            scope = shelf.size() - start;
         }
     }
-    random_device randomDevice3;
-    mt19937 generator3(randomDevice());
-    uniform_int_distribution<int> distribution3(1, 2);
-    int randomNumber3 = distribution3(generator3);
-
-    for (int i=0; i<depth; i++) {
-        if (i<=randomNumber3) {
-            shelf[i][2].setIsItBlank(true);
+    for(int i=0; i<shelf.size(); i++) {
+        for(int j=0; j<shelf[i].size(); j++) {
+            int k = j+scope;
+            shelf[i][j] = shelf[i][k];
+            shelf[i][k] = *new Item(0, true);
         }
     }
-
+    cout << "After moving items the shelf looks like this: \n";
+    printShelf(shelf);
 }
 
 int main() {
@@ -87,15 +115,10 @@ int main() {
     int depth = 10;
 
     vector<vector<Item>> shelf(depth, vector<Item>(width, Item()));
-
+    cout << "At first the shelf looks like this: \n";
+    printShelf(shelf);
     dailyLifts(shelf, depth, width);
-
-    for(int i=0; i<depth; i++) {
-        for(int j=0; j<width; j++) {
-            cout << shelf[i][j].print() << " ";
-        }
-        cout << endl;
-    }
+    moveItems(shelf);
 
     return 0;
 }
